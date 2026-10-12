@@ -2,7 +2,7 @@
 
 # Hi there, I'm Yide (Milo) Li 👋
 
-**Computer Science @ UC Irvine | Systems, Desktop Engineering & Research**
+**Computer Science @ UC Irvine | Systems & Desktop Engineering**
 
 [![GitHub followers](https://img.shields.io/github/followers/Yide-Milo-Li?style=flat&color=3384FF&label=Follow)](https://github.com/Yide-Milo-Li)
 [![GitHub stars](https://img.shields.io/github/stars/Yide-Milo-Li?style=flat&color=F59E0B&label=Stars)](https://github.com/Yide-Milo-Li)
@@ -14,9 +14,9 @@
 ### 🚀 About Me
 
 - 🎓 **Undergraduate** in Computer Science at **University of California, Irvine (UCI)** 🐜
-- 💻 Passionate about **Systems Programming**, **Local-First Desktop Software**, and **Applied AI / Computer Vision**.
-- 🛠️ Currently exploring C++20 architecture, Qt 6 / QML, Tauri desktop applications, and geometric generative models for aircraft landing pose estimation.
-- ⚡ In my free time, I build algorithm learning tools and custom chess variants.
+- 💻 Passionate about **Systems Programming**, **Local-First Desktop Software**, and **Algorithms**.
+- 🛠️ Currently exploring modern C++20 architecture, Qt 6 / QML, and Tauri desktop applications.
+- ⚡ In my free time, I build algorithm practice tools and custom chess variants.
 
 ---
 
@@ -43,7 +43,6 @@
 | [**LeetCode-Tracker**](https://github.com/Yide-Milo-Li/LeetCode-Tracker) | Local-first desktop algorithm practice tracker with BYOD JSONL catalogs, adaptive study plans, spaced-repetition insights, Markdown notes, and AI assistance. | `TypeScript` `Tauri` `SQLite` `Markdown` | ⭐ 12+ Stars<br>Local-first architecture |
 | [**AnteaterChess-Reborn**](https://github.com/Yide-Milo-Li/AnteaterChess-Reborn) | An 8 × 10 desktop chess variant featuring Ants and chain-capturing Anteaters. Modernized with native C++20, Qt 6 + QML, local multiplayer, and AI engine. | `C++20` `Qt 6` `QML` `CMake` | Cross-platform<br>Interactive AI & GUI |
 | [**AnteaterPoker**](https://github.com/Yide-Milo-Li/AnteaterPoker) | UCI EECS 22L team project: Online multiplayer Texas Hold'em poker in C with custom Anteater rules, multi-table client-server architecture, bot AI, and GUI. | `C` `Sockets` `Multiplayer` `EECS 22L` | Multi-client concurrency<br>Custom game engine |
-| [**VisionLanding**](https://github.com/Yide-Milo-Li/VisionLanding) | Vision-based aircraft landing simulation and 6-DoF pose estimation research utilizing Geometric Generative Models. | `Python` `Computer Vision` `Generative Models` | Academic Research (Fall 2026) |
 
 ---
 
