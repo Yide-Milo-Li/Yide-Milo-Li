@@ -68,6 +68,16 @@ const PROJECTS = [
     meta: "Team project · UCI EECS 22L",
     stack: ["C", "Sockets", "GTK", "Make"],
   },
+  {
+    slug: "agentrelay",
+    name: "AgentRelay",
+    wide: true,
+    comingSoon: true,
+    blurb:
+      "A self-hosted prompt relay for coding agents. Hand a task from one device to the next over MCP, with full context, claim tracking and receipts. Prompts travel as inert text and never run by themselves.",
+    meta: "Work in progress · private for now",
+    stack: ["TypeScript", "Next.js", "MCP", "Cloudflare D1", "Drizzle"],
+  },
 ];
 
 const SANS = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif";
@@ -191,6 +201,13 @@ function starPill(stars, right, y, t) {
   return `<g transform="translate(${right - w} ${y})"><title>${stars} stars</title><rect x="0.5" y="0.5" width="${w - 1}" height="27" rx="13.5" fill="none" stroke="${t.accent}"/><text x="${w / 2}" y="19" text-anchor="middle" font-family="${SANS}" font-size="14" font-weight="600" fill="${t.accent}">${escapeXml(label)}</text></g>`;
 }
 
+// Placeholder for a project that is not public yet: a pulsing dot instead of a star count.
+function comingSoonPill(right, y, t) {
+  const label = "Coming soon";
+  const w = Math.round(label.length * 7.6 + 40);
+  return `<g transform="translate(${right - w} ${y})"><rect x="0.5" y="0.5" width="${w - 1}" height="27" rx="13.5" fill="none" stroke="${t.accent2}"/><circle class="pulse" cx="16" cy="14" r="4" fill="${t.accent2}"/><text x="${(w + 18) / 2}" y="19" text-anchor="middle" font-family="${SANS}" font-size="13" font-weight="600" fill="${t.accent2}">${label}</text></g>`;
+}
+
 function renderProjectCard(project, t, stars) {
   const W = project.wide ? 1000 : 490;
   const pad = 28;
@@ -206,13 +223,20 @@ function renderProjectCard(project, t, stars) {
     .map((line, i) => `<text x="${pad}" y="${blurbTop + i * lineHeight}" font-family="${SANS}" font-size="${blurbSize}" fill="${t.text}">${escapeXml(line)}</text>`)
     .join("");
 
+  const soon = Boolean(project.comingSoon);
+  let badge;
+  if (soon) badge = comingSoonPill(W - pad, pad + 14, t);
+  else if (stars) badge = starPill(stars, W - pad, pad + 14, t);
+  else badge = `<text x="${W - pad}" y="${pad + 38}" text-anchor="end" font-family="${SANS}" font-size="20" fill="${t.muted}">↗</text>`;
+
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-labelledby="title">
-<title id="title">${escapeXml(project.name)}</title>
-<rect x="0.5" y="0.5" width="${W - 1}" height="${H - 1}" rx="12" fill="${t.panel}" stroke="${t.border}"/>
-<rect x="0" y="${pad}" width="4" height="34" rx="2" fill="${t.accent}"/>
+<title id="title">${escapeXml(project.name)}${soon ? " (coming soon)" : ""}</title>
+${soon ? `<style>.pulse { animation: pulse 1.8s ease-in-out infinite; } @keyframes pulse { 50% { opacity: 0.25; } } ${reducedMotion}</style>` : ""}
+<rect x="0.5" y="0.5" width="${W - 1}" height="${H - 1}" rx="12" fill="${t.panel}" stroke="${soon ? t.accent2 : t.border}"${soon ? ` stroke-dasharray="6 5" stroke-opacity="0.6"` : ""}/>
+<rect x="0" y="${pad}" width="4" height="34" rx="2" fill="${soon ? t.accent2 : t.accent}"/>
 <text x="${pad}" y="${pad + 14}" font-family="${MONO}" font-size="12" fill="${t.accent2}" letter-spacing="0.5">${escapeXml(USER)} /</text>
 <text x="${pad}" y="${pad + 38}" font-family="${SANS}" font-size="22" font-weight="700" fill="${t.text}">${escapeXml(project.name)}</text>
-${!stars ? `<text x="${W - pad}" y="${pad + 38}" text-anchor="end" font-family="${SANS}" font-size="20" fill="${t.muted}">↗</text>` : starPill(stars, W - pad, pad + 14, t)}
+${badge}
 ${blurb}
 <text x="${pad}" y="${metaY}" font-family="${MONO}" font-size="12" fill="${t.muted}">${escapeXml(project.meta)}</text>
 ${chips(project.stack, pad, chipsY, t)}
