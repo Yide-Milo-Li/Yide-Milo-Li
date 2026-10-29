@@ -2,10 +2,11 @@
 // Renders the SVG assets used by the profile README.
 //
 //   node scripts/build-assets.mjs static            -> assets/ (header, committed)
-//   node scripts/build-assets.mjs stats --out dist  -> dist/   (stats + project cards with live star counts,
-//                                                               published to the `output` branch)
+//   node scripts/build-assets.mjs stats --out dist  -> dist/   (stats, project cards with live star counts and
+//                                                               the rotating Zot card, published to the `output` branch)
 //
 // `stats` reads GitHub data with GITHUB_TOKEN, or from a saved GraphQL response via `--data <file>`.
+// `--slot <n>` pins the Zot card rotation, which otherwise advances every 6 hours.
 
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
@@ -27,6 +28,7 @@ const THEMES = {
     accent2: "#4aa3df",
     chipBg: "#1f2a37",
     chipText: "#c9d1d9",
+    difficulty: { Easy: "#00b8a3", Medium: "#ffb800", Hard: "#ff375f" },
   },
   light: {
     bg: "#ffffff",
@@ -39,6 +41,7 @@ const THEMES = {
     accent2: "#0064a4",
     chipBg: "#eaf2f8",
     chipText: "#0b3d63",
+    difficulty: { Easy: "#00897b", Medium: "#b97a00", Hard: "#d6224a" },
   },
 };
 
@@ -80,7 +83,58 @@ const PROJECTS = [
   },
 ];
 
-const SANS = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif";
+// The "Zot zot" card shows one problem and one fact, rotating every time the workflow runs.
+const PICKS = [
+  { id: 1, title: "Two Sum", difficulty: "Easy", tags: ["Array", "Hash Table"] },
+  { id: 3, title: "Longest Substring Without Repeating Characters", difficulty: "Medium", tags: ["Sliding Window", "Hash Table"] },
+  { id: 11, title: "Container With Most Water", difficulty: "Medium", tags: ["Two Pointers", "Greedy"] },
+  { id: 15, title: "3Sum", difficulty: "Medium", tags: ["Two Pointers", "Sorting"] },
+  { id: 20, title: "Valid Parentheses", difficulty: "Easy", tags: ["Stack", "String"] },
+  { id: 33, title: "Search in Rotated Sorted Array", difficulty: "Medium", tags: ["Binary Search"] },
+  { id: 42, title: "Trapping Rain Water", difficulty: "Hard", tags: ["Two Pointers", "Monotonic Stack"] },
+  { id: 49, title: "Group Anagrams", difficulty: "Medium", tags: ["Hash Table", "Sorting"] },
+  { id: 53, title: "Maximum Subarray", difficulty: "Medium", tags: ["Dynamic Programming"] },
+  { id: 56, title: "Merge Intervals", difficulty: "Medium", tags: ["Sorting", "Intervals"] },
+  { id: 70, title: "Climbing Stairs", difficulty: "Easy", tags: ["Dynamic Programming"] },
+  { id: 76, title: "Minimum Window Substring", difficulty: "Hard", tags: ["Sliding Window", "Hash Table"] },
+  { id: 79, title: "Word Search", difficulty: "Medium", tags: ["Backtracking", "Matrix"] },
+  { id: 84, title: "Largest Rectangle in Histogram", difficulty: "Hard", tags: ["Monotonic Stack"] },
+  { id: 98, title: "Validate Binary Search Tree", difficulty: "Medium", tags: ["Tree", "DFS"] },
+  { id: 121, title: "Best Time to Buy and Sell Stock", difficulty: "Easy", tags: ["Array", "Dynamic Programming"] },
+  { id: 124, title: "Binary Tree Maximum Path Sum", difficulty: "Hard", tags: ["Tree", "DFS"] },
+  { id: 127, title: "Word Ladder", difficulty: "Hard", tags: ["BFS", "Hash Table"] },
+  { id: 141, title: "Linked List Cycle", difficulty: "Easy", tags: ["Linked List", "Two Pointers"] },
+  { id: 146, title: "LRU Cache", difficulty: "Medium", tags: ["Design", "Hash Table", "Linked List"] },
+  { id: 200, title: "Number of Islands", difficulty: "Medium", tags: ["BFS", "Union Find"] },
+  { id: 206, title: "Reverse Linked List", difficulty: "Easy", tags: ["Linked List"] },
+  { id: 207, title: "Course Schedule", difficulty: "Medium", tags: ["Graph", "Topological Sort"] },
+  { id: 208, title: "Implement Trie (Prefix Tree)", difficulty: "Medium", tags: ["Trie", "Design"] },
+  { id: 215, title: "Kth Largest Element in an Array", difficulty: "Medium", tags: ["Heap", "Quickselect"] },
+  { id: 238, title: "Product of Array Except Self", difficulty: "Medium", tags: ["Array", "Prefix Sum"] },
+  { id: 239, title: "Sliding Window Maximum", difficulty: "Hard", tags: ["Monotonic Queue"] },
+  { id: 295, title: "Find Median from Data Stream", difficulty: "Hard", tags: ["Heap", "Design"] },
+  { id: 300, title: "Longest Increasing Subsequence", difficulty: "Medium", tags: ["Dynamic Programming", "Binary Search"] },
+  { id: 322, title: "Coin Change", difficulty: "Medium", tags: ["Dynamic Programming"] },
+  { id: 435, title: "Non-overlapping Intervals", difficulty: "Medium", tags: ["Greedy", "Intervals"] },
+  { id: 743, title: "Network Delay Time", difficulty: "Medium", tags: ["Graph", "Dijkstra"] },
+];
+
+const FACTS = [
+  "UCI students picked the anteater as mascot in 1965, borrowing \"Zot!\" from the comic strip B.C.",
+  "Giant anteaters have no teeth. Their tongue can reach about 60 cm and flick up to 150 times a minute.",
+  "A giant anteater can eat around 30,000 ants and termites in a single day.",
+  "Giant anteaters run at roughly 33 °C, one of the lowest body temperatures of any land mammal.",
+  "In AnteaterChess, an Anteater only eats Ants, chaining up to ten captures in one move.",
+  "In 1947, Grace Hopper's team taped a moth from the Harvard Mark II into their log: the first actual bug.",
+  "Dijkstra worked out his shortest-path algorithm in about twenty minutes at an Amsterdam café, without pen or paper.",
+  "Tony Hoare came up with Quicksort in 1959 while working on machine translation in Moscow.",
+  "Binary search was first published in 1946; per Knuth, a version correct for every n did not appear until 1962.",
+  "Java's Arrays.binarySearch shipped with an overflow bug in (low + high) / 2 that went unnoticed for about nine years.",
+  "SQLite is likely the most widely deployed database engine, with billions of copies running worldwide.",
+  "Rust's borrow checker turns many memory and data-race bugs into compile errors.",
+];
+
+const SANS ="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif";
 const MONO = "ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace";
 
 const escapeXml = (value) =>
@@ -360,6 +414,56 @@ function renderLanguages(stats, t) {
   return cardFrame("Languages in public repos", body, t);
 }
 
+// One slot per 6-hour workflow run. Different strides keep the same problem and fact from always pairing up.
+function zotPick(slot) {
+  return { pick: PICKS[(slot * 7) % PICKS.length], fact: FACTS[(slot * 5) % FACTS.length] };
+}
+
+function renderZotCard({ pick, fact }, t) {
+  const W = 1000;
+  const pad = 28;
+  const split = 470;
+  const titleLines = wrapText(`#${pick.id}  ${pick.title}`, split - pad * 2, 18);
+  const factLines = wrapText(fact, W - split - pad * 2, 15);
+  const diffColor = t.difficulty[pick.difficulty];
+  // Grow with whichever column wraps further so long titles never clip their tags.
+  const H = Math.max(86 + titleLines.length * 24 + 28, 86 + factLines.length * 22) + pad;
+
+  const title = titleLines
+    .map((line, i) => `<text x="${pad}" y="${86 + i * 24}" font-family="${SANS}" font-size="18" font-weight="700" fill="${t.text}">${escapeXml(line)}</text>`)
+    .join("");
+  const factText = factLines
+    .map((line, i) => `<text x="${split + pad}" y="${86 + i * 22}" font-family="${SANS}" font-size="15" fill="${t.text}">${escapeXml(line)}</text>`)
+    .join("");
+  const diffW = chipWidth(pick.difficulty);
+  const tagsY = 86 + titleLines.length * 24 + 4;
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-labelledby="title">
+<title id="title">Pick of the moment: LeetCode ${pick.id}, ${escapeXml(pick.title)}. Zot fact: ${escapeXml(fact)}</title>
+<style>
+  .in { opacity: 0; animation: in 0.6s ease-out forwards; }
+  .wiggle { transform-origin: ${W - pad - 14}px 44px; animation: wiggle 3s ease-in-out infinite; }
+  @keyframes in { to { opacity: 1; } }
+  @keyframes wiggle { 0%, 80%, 100% { transform: rotate(0); } 85% { transform: rotate(-14deg); } 90% { transform: rotate(10deg); } 95% { transform: rotate(-6deg); } }
+  ${reducedMotion}
+</style>
+<rect x="0.5" y="0.5" width="${W - 1}" height="${H - 1}" rx="12" fill="${t.panel}" stroke="${t.border}"/>
+<line x1="${split}" y1="${pad}" x2="${split}" y2="${H - pad}" stroke="${t.border}"/>
+<g class="in">
+  <text x="${pad}" y="48" font-family="${MONO}" font-size="12" fill="${t.accent2}" letter-spacing="1">PICK OF THE MOMENT</text>
+  ${title}
+  <g transform="translate(${pad} ${tagsY})"><rect width="${diffW}" height="24" rx="12" fill="none" stroke="${diffColor}"/><text x="${diffW / 2}" y="16.5" text-anchor="middle" font-family="${MONO}" font-size="12" fill="${diffColor}">${pick.difficulty}</text></g>
+  ${chips(pick.tags, pad + diffW + 8, tagsY, t)}
+</g>
+<g class="in" style="animation-delay:0.2s">
+  <text x="${split + pad}" y="48" font-family="${MONO}" font-size="12" fill="${t.accent}" letter-spacing="1">ZOT FACT</text>
+  ${factText}
+</g>
+<text class="wiggle" x="${W - pad}" y="52" text-anchor="end" font-size="26">🐜</text>
+</svg>
+`;
+}
+
 async function writeSvg(dir, name, svg) {
   await mkdir(dir, { recursive: true });
   await writeFile(path.join(dir, name), svg, "utf8");
@@ -386,7 +490,11 @@ async function main() {
     const raw = dataFile ? JSON.parse(await readFile(dataFile, "utf8")) : await fetchProfile();
     const stats = summarize(raw);
     console.log(JSON.stringify({ ...stats, starsByRepo: Object.fromEntries(stats.starsByRepo) }));
+    const slotArg = argValue(args, "--slot");
+    const slot = slotArg === undefined ? Math.floor(Date.now() / (6 * 60 * 60 * 1000)) : Number(slotArg);
+    const zot = zotPick(slot);
     for (const [name, t] of Object.entries(THEMES)) {
+      await writeSvg(out, `zot-${name}.svg`, renderZotCard(zot, t));
       await writeSvg(out, `stats-${name}.svg`, renderStats(stats, t));
       await writeSvg(out, `languages-${name}.svg`, renderLanguages(stats, t));
       for (const project of PROJECTS) {

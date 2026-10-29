@@ -1,4 +1,4 @@
-# Regenerates the live README images (stats, languages, project cards, contribution snake)
+# Regenerates the live README images (stats, languages, project cards, Zot card, 3D graph, snake)
 # and publishes them to the `output` branch so `main` history stays clean.
 name: Profile assets
 
@@ -11,6 +11,7 @@ on:
     paths:
       - "scripts/**"
       - ".github/workflows/profile-assets.yml"
+      - ".github/profile-3d-contrib.json"
 
 permissions:
   contents: write
@@ -41,6 +42,16 @@ jobs:
           outputs: |
             dist/snake-light.svg?color_snake=#0064a4&color_dots=#ebedf0,#c6dbef,#7fb2d9,#3a86c2,#0064a4
             dist/snake-dark.svg?palette=github-dark&color_snake=#ffd200&color_dots=#161b22,#3d3415,#7a6516,#c9a10a,#ffd200
+
+      - name: Render 3D contribution graph
+        uses: yoshi389111/github-profile-3d-contrib@v0.9.3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          USERNAME: ${{ github.repository_owner }}
+          SETTING_JSON: .github/profile-3d-contrib.json
+
+      - name: Collect 3D contribution graph
+        run: cp profile-3d-contrib/contrib3d-light.svg profile-3d-contrib/contrib3d-dark.svg dist/
 
       - name: Publish to output branch
         uses: crazy-max/ghaction-github-pages@v4
