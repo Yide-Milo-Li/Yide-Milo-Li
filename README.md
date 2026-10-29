@@ -19,11 +19,6 @@ I study Computer Science at UC Irvine 🐜. Most of what I build is software you
 - I care about the boring parts too: reproducible CMake builds, CI, release packaging, and docs people actually read.
 - Off the clock I invent board-game rules and then have to write the engine for them.
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Yide-Milo-Li/Yide-Milo-Li/output/zot-dark.svg" />
-  <img src="https://raw.githubusercontent.com/Yide-Milo-Li/Yide-Milo-Li/output/zot-light.svg" alt="A LeetCode problem pick and a Zot fact, both rotating every 6 hours." width="100%" />
-</picture>
-
 ## Projects
 
 <!-- projects:start -->
@@ -61,4 +56,4 @@ I study Computer Science at UC Irvine 🐜. Most of what I build is software you
   <img src="https://raw.githubusercontent.com/Yide-Milo-Li/Yide-Milo-Li/output/snake-light.svg" alt="Contribution graph being eaten by a snake" width="100%" />
 </picture>
 
-<sub>Stats, star counts and the pick above refresh every 6 hours via <a href=".github/workflows/profile-assets.yml">a GitHub Action</a> in this repo. Zot zot! 🐜</sub>
+<sub>Stats and star counts refresh every 6 hours via <a href=".github/workflows/profile-assets.yml">a GitHub Action</a> in this repo. Zot zot! 🐜</sub>
