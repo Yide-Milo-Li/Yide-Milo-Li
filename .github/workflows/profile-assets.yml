@@ -1,5 +1,6 @@
 # Regenerates the live README images (stats, languages, project cards, Zot card, 3D graph, snake)
-# and publishes them to the `output` branch so `main` history stays clean.
+# and publishes them to the `output` branch so `main` history stays clean. The only commit to `main`
+# is the project grid in README.md, and only when the star ranking changes its order.
 name: Profile assets
 
 on:
@@ -30,8 +31,8 @@ jobs:
         with:
           node-version: 24
 
-      - name: Render stats cards
-        run: node scripts/build-assets.mjs stats --out dist
+      - name: Render stats cards and rank projects
+        run: node scripts/build-assets.mjs stats --out dist --readme README.md
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -62,3 +63,16 @@ jobs:
           jekyll: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Runs after publishing so every card the new order points at already exists.
+      - name: Commit project order
+        run: |
+          if git diff --quiet -- README.md; then
+            echo "Project order unchanged."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "chore: reorder projects by stars" -- README.md
+          git pull --rebase origin main
+          git push origin HEAD:main

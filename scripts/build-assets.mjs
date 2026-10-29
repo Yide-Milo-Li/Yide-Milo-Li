@@ -7,6 +7,7 @@
 //
 // `stats` reads GitHub data with GITHUB_TOKEN, or from a saved GraphQL response via `--data <file>`.
 // `--slot <n>` pins the Zot card rotation, which otherwise advances every 6 hours.
+// `--readme <file>` rewrites the project grid in that README, most-starred project first.
 
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
@@ -48,15 +49,16 @@ const THEMES = {
 const PROJECTS = [
   {
     slug: "leetcode-tracker",
+    alt: "LeetCode-Tracker: a local-first desktop workbench for algorithm practice. TypeScript, React, Tauri, Rust, SQLite.",
     name: "LeetCode-Tracker",
-    wide: true,
     blurb:
-      "A local-first desktop workbench for algorithm practice. Bring your own JSONL catalog, plan a weekly routine, record practice, and keep Markdown notes next to each problem. AI suggestions are optional; everything else works offline.",
-    meta: "Windows x64 · macOS ARM64 · SQLite on your own disk",
-    stack: ["TypeScript", "React", "Tauri", "Rust", "SQLite", "Fastify"],
+      "A local-first desktop workbench for algorithm practice: bring your own JSONL catalog, plan a weekly routine, and keep Markdown notes beside each problem.",
+    meta: "Windows x64 · macOS ARM64 · works offline",
+    stack: ["TypeScript", "React", "Tauri", "Rust", "SQLite"],
   },
   {
     slug: "anteaterchess-reborn",
+    alt: "AnteaterChess-Reborn: an 8 by 10 chess variant with Ants and chain-capturing Anteaters. C++20, Qt 6, QML.",
     name: "AnteaterChess-Reborn",
     blurb:
       "Chess on an 8 × 10 board with Ants and chain-capturing Anteaters. Play a friend, take on the AI, or let two engines fight it out.",
@@ -65,6 +67,7 @@ const PROJECTS = [
   },
   {
     slug: "anteaterpoker",
+    alt: "AnteaterPoker: online Texas Hold'em in C with a socket server, GTK clients and bot players.",
     name: "AnteaterPoker",
     blurb:
       "Online Texas Hold'em with Anteater house rules, written in C by a team of six: a socket server, GTK clients, and bot players.",
@@ -73,13 +76,15 @@ const PROJECTS = [
   },
   {
     slug: "agentrelay",
+    alt: "AgentRelay, coming soon: a self-hosted prompt relay that hands tasks between devices and coding agents over MCP.",
     name: "AgentRelay",
-    wide: true,
     comingSoon: true,
+    // Private repo with no stars to rank by, so it holds a first-row slot instead.
+    pinnedSlot: 1,
     blurb:
-      "A self-hosted prompt relay for coding agents. Hand a task from one device to the next over MCP, with full context, claim tracking and receipts. Prompts travel as inert text and never run by themselves.",
+      "A self-hosted prompt relay for coding agents. Hand a task from one device to the next over MCP, with full context, claim tracking and receipts.",
     meta: "Work in progress · private for now",
-    stack: ["TypeScript", "Next.js", "MCP", "Cloudflare D1", "Drizzle"],
+    stack: ["TypeScript", "Next.js", "MCP", "Cloudflare D1"],
   },
 ];
 
@@ -262,14 +267,21 @@ function comingSoonPill(right, y, t) {
   return `<g transform="translate(${right - w} ${y})"><rect x="0.5" y="0.5" width="${w - 1}" height="27" rx="13.5" fill="none" stroke="${t.accent2}"/><circle class="pulse" cx="16" cy="14" r="4" fill="${t.accent2}"/><text x="${(w + 18) / 2}" y="19" text-anchor="middle" font-family="${SANS}" font-size="13" font-weight="600" fill="${t.accent2}">${label}</text></g>`;
 }
 
+const cardWidth = (project) => (project.wide ? 1000 : 490);
+const blurbLines = (project) => wrapText(project.blurb, cardWidth(project) - 56, 15);
+
+// Half-width cards sit side by side, so they all pad their blurb to the tallest one.
+const HALF_CARD_LINES = Math.max(...PROJECTS.filter((p) => !p.wide).map((p) => blurbLines(p).length));
+
 function renderProjectCard(project, t, stars) {
-  const W = project.wide ? 1000 : 490;
+  const W = cardWidth(project);
   const pad = 28;
   const blurbSize = 15;
-  const lines = wrapText(project.blurb, W - pad * 2, blurbSize);
+  const lines = blurbLines(project);
   const blurbTop = 92;
   const lineHeight = 23;
-  const metaY = blurbTop + lines.length * lineHeight + 14;
+  const rows = project.wide ? lines.length : HALF_CARD_LINES;
+  const metaY = blurbTop + rows * lineHeight + 14;
   const chipsY = metaY + 18;
   const H = chipsY + 24 + pad;
 
@@ -464,6 +476,42 @@ function renderZotCard({ pick, fact }, t) {
 `;
 }
 
+// Most-starred first (config order breaks ties), then pinned projects drop into their fixed slots.
+function orderProjects(starsByRepo) {
+  const stars = (p) => starsByRepo.get(p.name) ?? 0;
+  const ranked = PROJECTS.filter((p) => p.pinnedSlot === undefined).sort((a, b) => stars(b) - stars(a));
+  const pinned = PROJECTS.filter((p) => p.pinnedSlot !== undefined).sort((a, b) => a.pinnedSlot - b.pinnedSlot);
+  for (const p of pinned) ranked.splice(Math.min(p.pinnedSlot, ranked.length), 0, p);
+  return ranked;
+}
+
+const OUTPUT_URL = `https://raw.githubusercontent.com/${USER}/${USER}/output`;
+const PROJECTS_START = "<!-- projects:start -->";
+const PROJECTS_END = "<!-- projects:end -->";
+
+function projectGridMarkdown(ordered) {
+  const card = (p) => {
+    const picture = `<picture><source media="(prefers-color-scheme: dark)" srcset="${OUTPUT_URL}/${p.slug}-dark.svg" /><img src="${OUTPUT_URL}/${p.slug}-light.svg" alt="${escapeXml(p.alt)}" width="49%" /></picture>`;
+    // Coming-soon repos are private, so a link would only lead visitors to a 404.
+    return p.comingSoon ? picture : `<a href="https://github.com/${USER}/${p.name}">${picture}</a>`;
+  };
+  const rows = [];
+  for (let i = 0; i < ordered.length; i += 2) rows.push(ordered.slice(i, i + 2).map(card).join("\n"));
+  return rows.join("\n\n");
+}
+
+// Rewrites only the block between the project markers; returns whether the file changed.
+async function updateReadmeProjects(file, ordered) {
+  const readme = await readFile(file, "utf8");
+  const start = readme.indexOf(PROJECTS_START);
+  const end = readme.indexOf(PROJECTS_END);
+  if (start === -1 || end < start) throw new Error(`${file} is missing the ${PROJECTS_START} / ${PROJECTS_END} markers.`);
+  const next = `${readme.slice(0, start + PROJECTS_START.length)}\n${projectGridMarkdown(ordered)}\n${readme.slice(end)}`;
+  if (next === readme) return false;
+  await writeFile(file, next, "utf8");
+  return true;
+}
+
 async function writeSvg(dir, name, svg) {
   await mkdir(dir, { recursive: true });
   await writeFile(path.join(dir, name), svg, "utf8");
@@ -500,6 +548,12 @@ async function main() {
       for (const project of PROJECTS) {
         await writeSvg(out, `${project.slug}-${name}.svg`, renderProjectCard(project, t, stats.starsByRepo.get(project.name)));
       }
+    }
+    const readme = argValue(args, "--readme");
+    if (readme) {
+      const ordered = orderProjects(stats.starsByRepo);
+      const changed = await updateReadmeProjects(readme, ordered);
+      console.log(`project order: ${ordered.map((p) => p.name).join(", ")} (${changed ? "README updated" : "unchanged"})`);
     }
     return;
   }
