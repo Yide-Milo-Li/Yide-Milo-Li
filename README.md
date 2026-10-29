@@ -1,60 +1,56 @@
-<div align="center">
-
-# Hi there, I'm Yide (Milo) Li 👋
-
-**Computer Science @ UC Irvine | Systems & Desktop Engineering**
-
-[![GitHub followers](https://img.shields.io/github/followers/Yide-Milo-Li?style=flat&color=3384FF&label=Follow)](https://github.com/Yide-Milo-Li)
-[![GitHub stars](https://img.shields.io/github/stars/Yide-Milo-Li?style=flat&color=F59E0B&label=Stars)](https://github.com/Yide-Milo-Li)
-
----
-
-</div>
-
-### 🚀 About Me
-
-- 🎓 **Undergraduate** in Computer Science at **University of California, Irvine (UCI)** 🐜
-- 💻 Passionate about **Systems Programming**, **Local-First Desktop Software**, and **Algorithms**.
-- 🛠️ Currently exploring modern C++20 architecture, Qt 6 / QML, and Tauri desktop applications.
-- ⚡ In my free time, I build algorithm practice tools and custom chess variants.
-
----
-
-### 🛠️ Languages & Technologies
+<a href="https://github.com/Yide-Milo-Li">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/header-dark.svg" />
+    <img src="assets/header-light.svg" alt="Yide (Milo) Li. Computer Science at UC Irvine. I build desktop software that runs on your own machine." width="100%" />
+  </picture>
+</a>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/C++20-00599C?style=for-the-badge&logo=cplusplus&logoColor=white" alt="C++" />
-  <img src="https://img.shields.io/badge/C-A8B9CC?style=for-the-badge&logo=c&logoColor=black" alt="C" />
-  <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python" />
-  <img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
-  <img src="https://img.shields.io/badge/Qt_6-41CD52?style=for-the-badge&logo=qt&logoColor=white" alt="Qt 6" />
-  <img src="https://img.shields.io/badge/Tauri-24C8DB?style=for-the-badge&logo=tauri&logoColor=black" alt="Tauri" />
-  <img src="https://img.shields.io/badge/CMake-064F8C?style=for-the-badge&logo=cmake&logoColor=white" alt="CMake" />
-  <img src="https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black" alt="Linux" />
-  <img src="https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white" alt="Git" />
+  <a href="#projects">Projects</a> ·
+  <a href="#stack">Stack</a> ·
+  <a href="#activity">Activity</a>
 </p>
 
----
+## About
 
-### 🌟 Featured Projects
+I study Computer Science at UC Irvine 🐜. Most of what I build is software you install and own: native desktop apps, local-first data, and tools that still work when the Wi-Fi doesn't.
 
-| Project | Description | Stack | Highlights |
-| :--- | :--- | :--- | :--- |
-| [**LeetCode-Tracker**](https://github.com/Yide-Milo-Li/LeetCode-Tracker) | Local-first desktop algorithm practice tracker with BYOD JSONL catalogs, adaptive study plans, spaced-repetition insights, Markdown notes, and AI assistance. | `TypeScript` `Tauri` `SQLite` `Markdown` | ⭐ 12+ Stars<br>Local-first architecture |
-| [**AnteaterChess-Reborn**](https://github.com/Yide-Milo-Li/AnteaterChess-Reborn) | An 8 × 10 desktop chess variant featuring Ants and chain-capturing Anteaters. Modernized with native C++20, Qt 6 + QML, local multiplayer, and AI engine. | `C++20` `Qt 6` `QML` `CMake` | Cross-platform<br>Interactive AI & GUI |
-| [**AnteaterPoker**](https://github.com/Yide-Milo-Li/AnteaterPoker) | UCI EECS 22L team project: Online multiplayer Texas Hold'em poker in C with custom Anteater rules, multi-table client-server architecture, bot AI, and GUI. | `C` `Sockets` `Multiplayer` `EECS 22L` | Multi-client concurrency<br>Custom game engine |
+- These days I write C++20 with Qt 6 / QML, and TypeScript on Tauri with a bit of Rust underneath.
+- I care about the boring parts too: reproducible CMake builds, CI, release packaging, and docs people actually read.
+- Off the clock I invent board-game rules and then have to write the engine for them.
 
----
+## Projects
 
-### 📊 GitHub Overview
+<a href="https://github.com/Yide-Milo-Li/LeetCode-Tracker">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/leetcode-tracker-dark.svg" />
+    <img src="assets/leetcode-tracker-light.svg" alt="LeetCode-Tracker: a local-first desktop workbench for algorithm practice. TypeScript, React, Tauri, Rust, SQLite." width="100%" />
+  </picture>
+</a>
 
-<div align="center">
-  <img src="https://github-readme-stats.vercel.app/api?username=Yide-Milo-Li&show_icons=true&locale=en&theme=tokyonight&hide_border=true" alt="Yide's GitHub Stats" />
-  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=Yide-Milo-Li&layout=compact&theme=tokyonight&hide_border=true" alt="Top Languages" />
-</div>
+<a href="https://github.com/Yide-Milo-Li/AnteaterChess-Reborn"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/anteaterchess-reborn-dark.svg" /><img src="assets/anteaterchess-reborn-light.svg" alt="AnteaterChess-Reborn: an 8 by 10 chess variant with Ants and chain-capturing Anteaters. C++20, Qt 6, QML." width="49%" /></picture></a>
+<a href="https://github.com/Yide-Milo-Li/AnteaterPoker"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/anteaterpoker-dark.svg" /><img src="assets/anteaterpoker-light.svg" alt="AnteaterPoker: online Texas Hold'em in C with a socket server, GTK clients and bot players." width="49%" /></picture></a>
 
-<br />
+## Stack
 
-<div align="center">
-  <sub>"Zot Zot Zot!" 🐜 | Designed for GitHub Profile</sub>
-</div>
+<p>
+  <img src="https://skillicons.dev/icons?i=cpp,c,py,ts,react,rust,tauri,qt,cmake,sqlite,linux,git&perline=12" alt="C++, C, Python, TypeScript, React, Rust, Tauri, Qt, CMake, SQLite, Linux, Git" />
+</p>
+
+## Activity
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Yide-Milo-Li/Yide-Milo-Li/output/stats-dark.svg" />
+  <img src="https://raw.githubusercontent.com/Yide-Milo-Li/Yide-Milo-Li/output/stats-light.svg" alt="GitHub stats: contributions, stars, public repositories and followers" width="49%" />
+</picture>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Yide-Milo-Li/Yide-Milo-Li/output/languages-dark.svg" />
+  <img src="https://raw.githubusercontent.com/Yide-Milo-Li/Yide-Milo-Li/output/languages-light.svg" alt="Language breakdown across public repositories" width="49%" />
+</picture>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Yide-Milo-Li/Yide-Milo-Li/output/snake-dark.svg" />
+  <img src="https://raw.githubusercontent.com/Yide-Milo-Li/Yide-Milo-Li/output/snake-light.svg" alt="Contribution graph being eaten by a snake" width="100%" />
+</picture>
+
+<sub>Stats are regenerated daily by <a href=".github/workflows/profile-assets.yml">a GitHub Action</a> in this repo. Zot zot! 🐜</sub>
