@@ -23,13 +23,13 @@ I study Computer Science at UC Irvine 🐜. Most of what I build is software you
 
 <a href="https://github.com/Yide-Milo-Li/LeetCode-Tracker">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/leetcode-tracker-dark.svg" />
-    <img src="assets/leetcode-tracker-light.svg" alt="LeetCode-Tracker: a local-first desktop workbench for algorithm practice. TypeScript, React, Tauri, Rust, SQLite." width="100%" />
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Yide-Milo-Li/Yide-Milo-Li/output/leetcode-tracker-dark.svg" />
+    <img src="https://raw.githubusercontent.com/Yide-Milo-Li/Yide-Milo-Li/output/leetcode-tracker-light.svg" alt="LeetCode-Tracker: a local-first desktop workbench for algorithm practice. TypeScript, React, Tauri, Rust, SQLite." width="100%" />
   </picture>
 </a>
 
-<a href="https://github.com/Yide-Milo-Li/AnteaterChess-Reborn"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/anteaterchess-reborn-dark.svg" /><img src="assets/anteaterchess-reborn-light.svg" alt="AnteaterChess-Reborn: an 8 by 10 chess variant with Ants and chain-capturing Anteaters. C++20, Qt 6, QML." width="49%" /></picture></a>
-<a href="https://github.com/Yide-Milo-Li/AnteaterPoker"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/anteaterpoker-dark.svg" /><img src="assets/anteaterpoker-light.svg" alt="AnteaterPoker: online Texas Hold'em in C with a socket server, GTK clients and bot players." width="49%" /></picture></a>
+<a href="https://github.com/Yide-Milo-Li/AnteaterChess-Reborn"><picture><source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Yide-Milo-Li/Yide-Milo-Li/output/anteaterchess-reborn-dark.svg" /><img src="https://raw.githubusercontent.com/Yide-Milo-Li/Yide-Milo-Li/output/anteaterchess-reborn-light.svg" alt="AnteaterChess-Reborn: an 8 by 10 chess variant with Ants and chain-capturing Anteaters. C++20, Qt 6, QML." width="49%" /></picture></a>
+<a href="https://github.com/Yide-Milo-Li/AnteaterPoker"><picture><source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Yide-Milo-Li/Yide-Milo-Li/output/anteaterpoker-dark.svg" /><img src="https://raw.githubusercontent.com/Yide-Milo-Li/Yide-Milo-Li/output/anteaterpoker-light.svg" alt="AnteaterPoker: online Texas Hold'em in C with a socket server, GTK clients and bot players." width="49%" /></picture></a>
 
 ## Stack
 
@@ -53,4 +53,4 @@ I study Computer Science at UC Irvine 🐜. Most of what I build is software you
   <img src="https://raw.githubusercontent.com/Yide-Milo-Li/Yide-Milo-Li/output/snake-light.svg" alt="Contribution graph being eaten by a snake" width="100%" />
 </picture>
 
-<sub>Stats are regenerated daily by <a href=".github/workflows/profile-assets.yml">a GitHub Action</a> in this repo. Zot zot! 🐜</sub>
+<sub>Stats and star counts refresh every 6 hours via <a href=".github/workflows/profile-assets.yml">a GitHub Action</a> in this repo. Zot zot! 🐜</sub>

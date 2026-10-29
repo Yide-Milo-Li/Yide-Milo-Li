@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 // Renders the SVG assets used by the profile README.
 //
-//   node scripts/build-assets.mjs static            -> assets/ (header + project cards, committed)
-//   node scripts/build-assets.mjs stats --out dist  -> dist/   (live stats, published to the `output` branch)
+//   node scripts/build-assets.mjs static            -> assets/ (header, committed)
+//   node scripts/build-assets.mjs stats --out dist  -> dist/   (stats + project cards with live star counts,
+//                                                               published to the `output` branch)
 //
 // `stats` reads GitHub data with GITHUB_TOKEN, or from a saved GraphQL response via `--data <file>`.
 
@@ -184,7 +185,13 @@ function renderHeader(t) {
 `;
 }
 
-function renderProjectCard(project, t) {
+function starPill(stars, right, y, t) {
+  const label = `★ ${stars.toLocaleString("en-US")}`;
+  const w = Math.round(label.length * 8.6 + 24);
+  return `<g transform="translate(${right - w} ${y})"><title>${stars} stars</title><rect x="0.5" y="0.5" width="${w - 1}" height="27" rx="13.5" fill="none" stroke="${t.accent}"/><text x="${w / 2}" y="19" text-anchor="middle" font-family="${SANS}" font-size="14" font-weight="600" fill="${t.accent}">${escapeXml(label)}</text></g>`;
+}
+
+function renderProjectCard(project, t, stars) {
   const W = project.wide ? 1000 : 490;
   const pad = 28;
   const blurbSize = 15;
@@ -205,7 +212,7 @@ function renderProjectCard(project, t) {
 <rect x="0" y="${pad}" width="4" height="34" rx="2" fill="${t.accent}"/>
 <text x="${pad}" y="${pad + 14}" font-family="${MONO}" font-size="12" fill="${t.accent2}" letter-spacing="0.5">${escapeXml(USER)} /</text>
 <text x="${pad}" y="${pad + 38}" font-family="${SANS}" font-size="22" font-weight="700" fill="${t.text}">${escapeXml(project.name)}</text>
-<text x="${W - pad}" y="${pad + 38}" text-anchor="end" font-family="${SANS}" font-size="20" fill="${t.muted}">↗</text>
+${!stars ? `<text x="${W - pad}" y="${pad + 38}" text-anchor="end" font-family="${SANS}" font-size="20" fill="${t.muted}">↗</text>` : starPill(stars, W - pad, pad + 14, t)}
 ${blurb}
 <text x="${pad}" y="${metaY}" font-family="${MONO}" font-size="12" fill="${t.muted}">${escapeXml(project.meta)}</text>
 ${chips(project.stack, pad, chipsY, t)}
@@ -220,6 +227,7 @@ const PROFILE_QUERY = `query($login: String!) {
     repositories(privacy: PUBLIC, ownerAffiliations: OWNER, isFork: false, first: 100) {
       totalCount
       nodes {
+        name
         stargazerCount
         languages(first: 10, orderBy: { field: SIZE, direction: DESC }) { edges { size node { name color } } }
       }
@@ -259,6 +267,7 @@ function summarize({ data: { user } }) {
   return {
     contributions: user.contributionsCollection.contributionCalendar.totalContributions,
     stars: repos.reduce((sum, r) => sum + r.stargazerCount, 0),
+    starsByRepo: new Map(repos.map((r) => [r.name, r.stargazerCount])),
     publicRepos: user.repositories.totalCount,
     followers: user.followers.totalCount,
     languages,
@@ -286,8 +295,8 @@ ${body}
 
 function renderStats(stats, t) {
   const items = [
-    ["Contributions, past year", stats.contributions],
     ["Stars on public repos", stats.stars],
+    ["Contributions, past year", stats.contributions],
     ["Public repositories", stats.publicRepos],
     ["Followers", stats.followers],
   ];
@@ -295,7 +304,9 @@ function renderStats(stats, t) {
     .map(([label, value], i) => {
       const x = 28 + (i % 2) * 225;
       const y = 104 + Math.floor(i / 2) * 58;
-      return `<g class="in" style="animation-delay:${i * 0.12}s"><text x="${x}" y="${y}" font-family="${SANS}" font-size="28" font-weight="700" fill="${t.text}">${value.toLocaleString("en-US")}</text><text x="${x}" y="${y + 20}" font-family="${SANS}" font-size="13" fill="${t.muted}">${escapeXml(label)}</text></g>`;
+      // Stars lead the card, so they get the accent star.
+      const star = i === 0 ? `<tspan fill="${t.accent}">★ </tspan>` : "";
+      return `<g class="in" style="animation-delay:${i * 0.12}s"><text x="${x}" y="${y}" font-family="${SANS}" font-size="28" font-weight="700" fill="${t.text}">${star}${value.toLocaleString("en-US")}</text><text x="${x}" y="${y + 20}" font-family="${SANS}" font-size="13" fill="${t.muted}">${escapeXml(label)}</text></g>`;
     })
     .join("");
   return cardFrame("GitHub at a glance", body, t);
@@ -341,10 +352,7 @@ async function main() {
 
   if (mode === "static") {
     const out = argValue(args, "--out") ?? "assets";
-    for (const [name, t] of Object.entries(THEMES)) {
-      await writeSvg(out, `header-${name}.svg`, renderHeader(t));
-      for (const project of PROJECTS) await writeSvg(out, `${project.slug}-${name}.svg`, renderProjectCard(project, t));
-    }
+    for (const [name, t] of Object.entries(THEMES)) await writeSvg(out, `header-${name}.svg`, renderHeader(t));
     return;
   }
 
@@ -353,10 +361,13 @@ async function main() {
     const dataFile = argValue(args, "--data");
     const raw = dataFile ? JSON.parse(await readFile(dataFile, "utf8")) : await fetchProfile();
     const stats = summarize(raw);
-    console.log(JSON.stringify(stats));
+    console.log(JSON.stringify({ ...stats, starsByRepo: Object.fromEntries(stats.starsByRepo) }));
     for (const [name, t] of Object.entries(THEMES)) {
       await writeSvg(out, `stats-${name}.svg`, renderStats(stats, t));
       await writeSvg(out, `languages-${name}.svg`, renderLanguages(stats, t));
+      for (const project of PROJECTS) {
+        await writeSvg(out, `${project.slug}-${name}.svg`, renderProjectCard(project, t, stats.starsByRepo.get(project.name)));
+      }
     }
     return;
   }

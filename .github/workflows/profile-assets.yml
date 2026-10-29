@@ -1,10 +1,10 @@
-# Regenerates the live README images (stats, languages, contribution snake)
+# Regenerates the live README images (stats, languages, project cards, contribution snake)
 # and publishes them to the `output` branch so `main` history stays clean.
 name: Profile assets
 
 on:
   schedule:
-    - cron: "17 8 * * *"
+    - cron: "17 */6 * * *"
   workflow_dispatch:
   push:
     branches: [main]
