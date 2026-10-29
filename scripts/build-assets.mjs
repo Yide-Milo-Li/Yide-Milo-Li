@@ -79,8 +79,6 @@ const PROJECTS = [
     alt: "AgentRelay, coming soon: a self-hosted prompt relay that hands tasks between devices and coding agents over MCP.",
     name: "AgentRelay",
     comingSoon: true,
-    // Private repo with no stars to rank by, so it holds a first-row slot instead.
-    pinnedSlot: 1,
     blurb:
       "A self-hosted prompt relay for coding agents. Hand a task from one device to the next over MCP, with full context, claim tracking and receipts.",
     meta: "Work in progress · private for now",
@@ -476,13 +474,10 @@ function renderZotCard({ pick, fact }, t) {
 `;
 }
 
-// Most-starred first (config order breaks ties), then pinned projects drop into their fixed slots.
+// Most-starred first; the sort is stable, so config order breaks ties. Private repos count as 0 stars.
 function orderProjects(starsByRepo) {
   const stars = (p) => starsByRepo.get(p.name) ?? 0;
-  const ranked = PROJECTS.filter((p) => p.pinnedSlot === undefined).sort((a, b) => stars(b) - stars(a));
-  const pinned = PROJECTS.filter((p) => p.pinnedSlot !== undefined).sort((a, b) => a.pinnedSlot - b.pinnedSlot);
-  for (const p of pinned) ranked.splice(Math.min(p.pinnedSlot, ranked.length), 0, p);
-  return ranked;
+  return [...PROJECTS].sort((a, b) => stars(b) - stars(a));
 }
 
 const OUTPUT_URL = `https://raw.githubusercontent.com/${USER}/${USER}/output`;
