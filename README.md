@@ -6,7 +6,7 @@
 </a>
 
 <p align="center">
-  <a href="https://sites.google.com/view/yideli">Homepage</a> ·
+  <a href="https://personal-homepage.yideli.workers.dev">Homepage</a> ·
   <a href="#projects">Projects</a> ·
   <a href="#stack">Stack</a> ·
   <a href="#activity">Activity</a>
@@ -19,7 +19,7 @@ I study Computer Science at UC Irvine 🐜. Most of what I build is software you
 - These days I write C++20 with Qt 6 / QML, and TypeScript on Tauri with a bit of Rust underneath.
 - I care about the boring parts too: reproducible CMake builds, CI, release packaging, and docs people actually read.
 - Off the clock I invent board-game rules and then have to write the engine for them.
-- My internship, research and playable demos of these projects are on [my homepage](https://sites.google.com/view/yideli).
+- My internship, research and playable demos of these projects are on [my homepage](https://personal-homepage.yideli.workers.dev).
 
 ## Projects
 
