@@ -73,12 +73,11 @@ const PROJECTS = [
   },
   {
     slug: "agentrelay",
-    alt: "AgentRelay, coming soon: a self-hosted prompt relay that hands tasks between devices and coding agents over MCP.",
+    alt: "AgentRelay: a self-hosted prompt relay that hands tasks between devices and coding agents over MCP.",
     name: "AgentRelay",
-    comingSoon: true,
     blurb:
       "A self-hosted prompt relay for coding agents. Hand a task from one device to the next over MCP, with full context, claim tracking and receipts.",
-    meta: "Work in progress · private for now",
+    meta: "Open source · MIT license · self-hosted",
     stack: ["TypeScript", "Next.js", "MCP", "Cloudflare D1"],
   },
 ];
